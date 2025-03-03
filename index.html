@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>技术文章</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .article-list { list-style: none; padding: 0; }
+        .article-list li { padding: 10px; border-bottom: 1px solid #ddd; }
+        .article-list li a { text-decoration: none; color: #333; }
+        #article-content { display: none; }
+        #search { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>技术文章</h1>
+    <input type="text" id="search" placeholder="搜索文章...">
+    <ul id="article-list" class="article-list"></ul>
+    <div id="article-content">
+        <h2 id="article-title"></h2>
+        <p id="article-body"></p>
+        <button onclick="backToList()">返回列表</button>
+    </div>
+
+    <script>
+        const apiUrl = 'https://your-worker.workers.dev'; // 替换成你的 Workers 域名
+
+        // 获取文章列表
+        async function fetchArticles(query = '') {
+            const response = await fetch(`${apiUrl}/articles${query ? `?search=${query}` : ''}`);
+            const articles = await response.json();
+            const list = document.getElementById('article-list');
+            list.innerHTML = '';
+            articles.forEach(article => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#" onclick="showArticle('${article.id}')">${article.title}</a>`;
+                list.appendChild(li);
+            });
+        }
+
+        // 显示文章详情
+        async function showArticle(id) {
+            const response = await fetch(`${apiUrl}/article/${id}`);
+            const article = await response.json();
+            document.getElementById('article-title').textContent = article.title;
+            document.getElementById('article-body').textContent = article.content;
+            document.getElementById('article-list').style.display = 'none';
+            document.getElementById('search').style.display = 'none';
+            document.getElementById('article-content').style.display = 'block';
+        }
+
+        // 返回列表
+        function backToList() {
+            document.getElementById('article-list').style.display = 'block';
+            document.getElementById('search').style.display = 'block';
+            document.getElementById('article-content').style.display = 'none';
+        }
+
+        // 搜索功能
+        document.getElementById('search').addEventListener('input', (e) => {
+            fetchArticles(e.target.value);
+        });
+
+        // 初始加载
+        fetchArticles();
+    </script>
+</body>
+</html>
