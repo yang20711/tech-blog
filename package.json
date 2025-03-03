@@ -3,6 +3,6 @@
     "version": "1.0.0",
     "description": "A tech blog on Cloudflare Pages",
     "scripts": {
-        "build": "mkdir dist && cp index.html dist/"
+        "build": "mkdir dist 2>nul || cd . && copy index.html dist\\"
     }
 }
